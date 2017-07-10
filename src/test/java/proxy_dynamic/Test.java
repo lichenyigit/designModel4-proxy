@@ -1,5 +1,7 @@
 package proxy_dynamic;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 
 /**
  * @author lichenyi
@@ -7,8 +9,15 @@ package proxy_dynamic;
  */
 public class Test {
     public static void main(String args[]) {
+        Pursuer pursuer = new RealPursuer();
         ProxyHandle proxyHandle = new ProxyHandle();
-        RealPursuer realPursuer = (RealPursuer) proxyHandle.bind(new RealPursuer());
-        realPursuer.sendBag();
+        pursuer = proxyHandle.bind(pursuer, proxyHandle);
+        pursuer.sendBag();
+
+
+        InvocationHandler proxyHandle1 = new ProxyHandle(pursuer);
+        pursuer = (Pursuer) Proxy.newProxyInstance(proxyHandle1.getClass().getClassLoader(), pursuer.getClass().getInterfaces(), proxyHandle1);
+        pursuer.sendFollows();
+        pursuer.sendShoes();
     }
 }
